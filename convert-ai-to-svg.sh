@@ -1,13 +1,19 @@
 #! /bin/bash
 
-#set -eu
+set -eu
 
 input=$1
 clean="${input}.clean"
 output="${input}.svg"
 
+verbose="${VERBOSE:-false}"
+
+last_progress_time=$(date +%s)
+progress_timeout=1
+
 # make file readable
 tr -cs '[:print:]' '[\n*]' < "${input}" > "${clean}"
+lines=$(wc -l < "${clean}")
 
 # defaults for header
 x=0
@@ -85,10 +91,21 @@ while IFS= read -r line || [[ -n "$line" ]]; do
         fi
         data+="$command $current"
     fi
+    # print progress
+    if [ "$verbose" == "true" ]; then
+        let next_progress_time=last_progress_time+progress_timeout
+        if [ "$next_progress_time" -lt "$(date +%s)" ]; then
+        progress=$(awk -v line=$line_number -v lines=$lines 'BEGIN { printf"%0.1f\n", line*100/lines }')
+        last_progress_time=$(date +%s)
+        echo "[INFO] ${progress}%"
+        fi
+    fi
+    # increment line
     let line_number=line_number+1
 done < "${clean}"
 rm "${clean}"
 
 echo "</svg>" >> "${output}"
-
-echo "[INFO] Done"
+if [ "$verbose" == "true" ]; then
+    echo "[INFO] Done"
+fi
