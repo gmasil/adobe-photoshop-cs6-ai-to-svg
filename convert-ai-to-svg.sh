@@ -4,7 +4,7 @@
 
 input=$1
 clean="${input}.clean"
-output=out.svg
+output="${input}.svg"
 
 # make file readable
 tr -cs '[:print:]' '[\n*]' < "${input}" > "${clean}"

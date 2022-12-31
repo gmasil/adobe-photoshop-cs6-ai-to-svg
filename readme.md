@@ -7,3 +7,5 @@ In Photoshop CS6 export a path using `File` -> `Export` -> `Path -> Illustrator.
 ```bash
 ./convert-ai-to-svg.sh my-path-file.ai
 ```
+
+The SVG file will bes aved as `my-path-file.ai.svg`.
